@@ -29,23 +29,30 @@ Open a terminal and run:
 # Update package list
 sudo apt update  
 
-# Install Python 3
-sudo apt install -y python3  
+## Install Python 3
+
+| Operating System        | Command(s)                                                                 |
+|--------------------------|----------------------------------------------------------------------------|
+| **Ubuntu / Debian**     | `sudo apt update && sudo apt install -y python3 python3-pip`               |
+| **Linux Mint**          | `sudo apt update && sudo apt install -y python3 python3-pip`               |
+| **Fedora**              | `sudo dnf install -y python3 python3-pip`                                  |
+| **CentOS / RHEL 8+**    | `sudo dnf install -y python3 python3-pip`                                  |
+| **CentOS / RHEL 7**     | `sudo yum install -y python3 python3-pip`                                  |
+| **Arch Linux / Manjaro**| `sudo pacman -S python python-pip`                                         |
+| **openSUSE**            | `sudo zypper install -y python3 python3-pip`                               |
+| **Alpine Linux**        | `apk add --update python3 py3-pip`                                         |
+| **macOS (with Homebrew)** | `brew install python3`                                                   |
+| **Windows**             | Download from [python.org](https://www.python.org/downloads/) and install. |
+
+📌 Note: Most modern Linux distributions already come with Python 3 preinstalled. You can check with:  
+```bash
+python3 --version
+
 
 # (Optional) Install pip if needed
 sudo apt install -y python3-pip  
 
 # Run MetroOS
-chmod +x metro-os.py
-./metro-os.py
-
-###Fedora / Red Hat / CentOS/ Leap/REDHAT-base Linux
-sudo dnf install -y python3
-chmod +x metro-os.py
-./metro-os.py
-
-###Arch Linux / Manjaro/Arch-base Linux
-sudo pacman -S python
 chmod +x metro-os.py
 ./metro-os.py
 
