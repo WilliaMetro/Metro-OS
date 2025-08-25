@@ -6,6 +6,12 @@ MetroOS is a small experimental project simulating an operating system.
 It supports **CMD, DOS, and Python**, allowing you to explore files, folders, and simple commands.  
 
 ---
+## Warning
+
+The **Metro-OS-gui (Python version)** is currently **broken** and does not run properly.  
+You are free to **modify and re-upload** it, but please be careful: running it may potentially cause unexpected behavior or even harm your operating system.  
+
+Use at your own risk!
 
 ## How to Run  
 
