@@ -1,0 +1,564 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Metro OS – GUI Edition (Full)
+---------------------------------
+A full GUI port of Metro OS using Tkinter.
+Features:
+- Boot Menu
+- File Manager (rooted at ./G/systemfile/data)
+- Clock (auto-refresh)
+- News reader (./G/News/*.txt)
+- Calculator (safe eval)
+- System information
+- Password manager with DEV gate (./G/pass/password.txt)
+- CD/DVD Reader (./G/CD/*.txt)
+- Dev tools (script root reader, reset/create gag)
+
+Run with: python3 metro_os_gui_full.py
+"""
+from __future__ import annotations
+
+import os
+import sys
+import shutil
+import math
+import platform
+import socket
+import random
+import time
+import ast
+from pathlib import Path
+from datetime import datetime
+import tkinter as tk
+from tkinter import ttk, messagebox, simpledialog, filedialog
+from tkinter.scrolledtext import ScrolledText
+
+# --------------------------- Paths & Globals --------------------------- #
+BASE = Path(__file__).resolve().parent
+G_DIR = BASE / "G"
+DATA_DIR = G_DIR / "systemfile" / "data"
+NEWS_DIR = G_DIR / "News"
+PASS_DIR = G_DIR / "pass"
+PASS_FILE = PASS_DIR / "password.txt"
+CD_DIR = G_DIR / "CD"
+
+DEV_PASSWORD = "10122009"
+
+for p in [DATA_DIR, NEWS_DIR, PASS_DIR, CD_DIR]:
+    p.mkdir(parents=True, exist_ok=True)
+
+# Seed default admin for password manager if missing
+if not PASS_FILE.exists():
+    PASS_FILE.write_text("[admin]=[adminpassword123]\n", encoding="utf-8")
+
+# --------------------------- Safe Eval (Calculator) --------------------------- #
+_ALLOWED_EXPR_NODES = (
+    ast.Expression,
+    ast.BinOp,
+    ast.UnaryOp,
+    ast.Constant,
+    ast.Num,
+)
+_ALLOWED_BINOPS = (ast.Add, ast.Sub, ast.Mult, ast.Div, ast.FloorDiv, ast.Mod, ast.Pow)
+_ALLOWED_UNARYOPS = (ast.UAdd, ast.USub)
+
+
+def safe_eval(expr: str) -> float:
+    """Safely evaluate a basic arithmetic expression."""
+    node = ast.parse(expr, mode="eval")
+
+    def _check(n: ast.AST):
+        if isinstance(n, ast.Expression):
+            _check(n.body)
+        elif isinstance(n, ast.BinOp):
+            if not isinstance(n.op, _ALLOWED_BINOPS):
+                raise ValueError("Unsupported binary operator")
+            _check(n.left)
+            _check(n.right)
+        elif isinstance(n, ast.UnaryOp):
+            if not isinstance(n.op, _ALLOWED_UNARYOPS):
+                raise ValueError("Unsupported unary operator")
+            _check(n.operand)
+        elif isinstance(n, (ast.Constant, ast.Num)):
+            val = getattr(n, "n", getattr(n, "value", None))
+            if not isinstance(val, (int, float)):
+                raise ValueError("Only numeric constants allowed")
+        else:
+            raise ValueError(f"Unsupported element: {type(n).__name__}")
+
+    _check(node)
+    return eval(compile(node, "<expr>", "eval"), {"__builtins__": {}}, {})
+
+# --------------------------- Helpers --------------------------- #
+
+def ensure_within_root(target: Path, root: Path) -> bool:
+    try:
+        target = target.resolve()
+        root = root.resolve()
+        return (root == target) or (root in target.parents)
+    except Exception:
+        return False
+
+
+def read_text_file(p: Path) -> str:
+    try:
+        return p.read_text(encoding="utf-8", errors="replace")
+    except Exception as e:
+        return f"ERROR reading file: {e}"
+
+
+# --------------------------- GUI Application --------------------------- #
+class MetroGUI(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Metro OS – GUI Edition (Full)")
+        self.geometry("720x480")
+        self.style = ttk.Style(self)
+        # Use default theme; user can change externally
+        self._build_main()
+
+    def _build_main(self):
+        frame = ttk.Frame(self, padding=12)
+        frame.pack(fill="both", expand=True)
+        ttk.Label(frame, text="Metro OS – GUI Edition", font=("Segoe UI", 16, "bold")).pack(pady=(0,10))
+
+        btn_frame = ttk.Frame(frame)
+        btn_frame.pack(fill="x", pady=6)
+
+        ttk.Button(btn_frame, text="Boot Menu", command=self.open_boot).grid(row=0, column=0, padx=6, pady=6)
+        ttk.Button(btn_frame, text="File Manager", command=self.open_file_manager).grid(row=0, column=1, padx=6)
+        ttk.Button(btn_frame, text="News Reader", command=self.open_news_reader).grid(row=0, column=2, padx=6)
+        ttk.Button(btn_frame, text="Clock", command=self.open_clock).grid(row=0, column=3, padx=6)
+        ttk.Button(btn_frame, text="Calculator", command=self.open_calculator).grid(row=1, column=0, padx=6, pady=6)
+        ttk.Button(btn_frame, text="Password Manager", command=self.open_password_manager).grid(row=1, column=1, padx=6)
+        ttk.Button(btn_frame, text="System Info", command=self.open_sysinfo).grid(row=1, column=2, padx=6)
+        ttk.Button(btn_frame, text="CD/DVD", command=self.open_cd).grid(row=1, column=3, padx=6)
+
+        ttk.Button(frame, text="Exit", command=self.quit).pack(pady=10)
+
+    # --------------------------- Boot Menu --------------------------- #
+    def open_boot(self):
+        win = tk.Toplevel(self)
+        win.title("Boot Menu")
+        win.geometry("320x240")
+        ttk.Label(win, text="Boot Menu", font=("Segoe UI", 14, "bold")).pack(pady=8)
+        ttk.Button(win, text="System Menu (same as main)", command=lambda: messagebox.showinfo("Info", "Use main window buttons." )).pack(fill="x", padx=12, pady=6)
+        ttk.Button(win, text="Dev Mode", command=self.dev_tool_gate).pack(fill="x", padx=12, pady=6)
+        ttk.Button(win, text="Close", command=win.destroy).pack(fill="x", padx=12, pady=6)
+
+    # --------------------------- Clock --------------------------- #
+    def open_clock(self):
+        win = tk.Toplevel(self)
+        win.title("Clock")
+        win.geometry("300x150")
+        lbl = ttk.Label(win, font=("Consolas", 24))
+        lbl.pack(expand=True, pady=10)
+
+        def tick():
+            lbl.config(text=datetime.now().strftime("%H:%M:%S"))
+            lbl.after(1000, tick)
+
+        tick()
+
+    # --------------------------- Calculator --------------------------- #
+    def open_calculator(self):
+        win = tk.Toplevel(self)
+        win.title("Calculator")
+        win.geometry("400x180")
+        ttk.Label(win, text="Enter expression:").pack(pady=(10,0))
+        expr = ttk.Entry(win, width=40)
+        expr.pack(pady=6)
+        res = ttk.Label(win, text="Result will appear here")
+        res.pack(pady=6)
+
+        def do_calc():
+            e = expr.get().strip()
+            if not e:
+                return
+            try:
+                r = safe_eval(e)
+                if isinstance(r, (int, float)) and math.isfinite(r):
+                    res.config(text=f"{e} = {r}")
+                else:
+                    res.config(text="Invalid or non-finite result")
+            except ZeroDivisionError:
+                messagebox.showerror("Error", "Division by zero")
+            except Exception as ex:
+                messagebox.showerror("Error", f"{ex}")
+
+        ttk.Button(win, text="Calculate", command=do_calc).pack(pady=6)
+
+    # --------------------------- System Information --------------------------- #
+    def open_sysinfo(self):
+        win = tk.Toplevel(self)
+        win.title("System Information")
+        win.geometry("420x240")
+        info = []
+        info.append(f"Computer Name: {socket.gethostname()}")
+        try:
+            info.append(f"Username: {os.getlogin()}")
+        except Exception:
+            info.append(f"Username: {os.environ.get('USER') or os.environ.get('USERNAME') or 'unknown'}")
+        info.append(f"Operating System: {platform.system()} {platform.release()}")
+        cpu = platform.processor() or platform.machine()
+        info.append(f"Processor: {cpu}")
+        try:
+            total, used, free = shutil.disk_usage(str(BASE))
+            info.append(f"Available Disk Space: {free // (1024**3)} GB")
+        except Exception:
+            info.append("Available Disk Space: (unknown)")
+        info.append("RAM Size: (unknown without psutil)")
+        text = "\n".join(info)
+        ttk.Label(win, text=text, justify="left").pack(padx=10, pady=10)
+
+    # --------------------------- File Manager --------------------------- #
+    def open_file_manager(self):
+        win = tk.Toplevel(self)
+        win.title("File Manager")
+        win.geometry("800x480")
+
+        current = {'path': DATA_DIR}
+
+        top = ttk.Frame(win)
+        top.pack(fill='x', padx=8, pady=8)
+        path_label = ttk.Label(top, text=f"Root: {DATA_DIR}")
+        path_label.pack(side='left')
+
+        mid = ttk.Frame(win)
+        mid.pack(fill='both', expand=True, padx=8, pady=6)
+
+        folders_lb = tk.Listbox(mid)
+        files_lb = tk.Listbox(mid)
+        folders_lb.grid(row=0, column=0, sticky='nsew', padx=(0,6))
+        files_lb.grid(row=0, column=1, sticky='nsew')
+        mid.columnconfigure(0, weight=1)
+        mid.columnconfigure(1, weight=2)
+        mid.rowconfigure(0, weight=1)
+
+        def refresh_lists():
+            folders_lb.delete(0, 'end')
+            files_lb.delete(0, 'end')
+            try:
+                for entry in sorted(current['path'].iterdir(), key=lambda p: (p.is_file(), p.name.lower())):
+                    if entry.is_dir():
+                        folders_lb.insert('end', entry.name)
+                    else:
+                        files_lb.insert('end', entry.name)
+            except FileNotFoundError:
+                current['path'].mkdir(parents=True, exist_ok=True)
+
+        def go_root():
+            current['path'] = DATA_DIR
+            refresh_lists()
+
+        def go_back():
+            if current['path'] != DATA_DIR:
+                current['path'] = current['path'].parent
+                refresh_lists()
+
+        def cd_into():
+            sel = folders_lb.curselection()
+            if not sel:
+                return
+            name = folders_lb.get(sel[0])
+            target = (current['path'] / name).resolve()
+            if ensure_within_root(target, DATA_DIR) and target.is_dir():
+                current['path'] = target
+                refresh_lists()
+            else:
+                messagebox.showwarning('Blocked', 'Cannot leave root')
+
+        def view_file():
+            sel = files_lb.curselection()
+            if not sel:
+                return
+            name = files_lb.get(sel[0])
+            p = current['path'] / name
+            if p.is_file():
+                content = read_text_file(p)
+                vwin = tk.Toplevel(win)
+                vwin.title(f"View: {name}")
+                txt = ScrolledText(vwin, width=80, height=20)
+                txt.pack(fill='both', expand=True)
+                txt.insert('1.0', content)
+                txt.config(state='disabled')
+
+        def create_item():
+            kind = simpledialog.askstring('Create', 'Enter type (f or d):', parent=win)
+            if not kind:
+                return
+            kind = kind.strip().lower()
+            name = simpledialog.askstring('Create', 'Enter name:', parent=win)
+            if not name:
+                return
+            target = current['path'] / name
+            try:
+                if kind == 'f':
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_text('', encoding='utf-8')
+                elif kind == 'd':
+                    target.mkdir(parents=True, exist_ok=True)
+                else:
+                    messagebox.showinfo('Info', 'Use f for file or d for directory')
+                refresh_lists()
+            except Exception as e:
+                messagebox.showerror('Error', str(e))
+
+        def delete_item():
+            # try file first
+            self_idx = files_lb.curselection()
+            dir_idx = folders_lb.curselection()
+            if self_idx:
+                name = files_lb.get(self_idx[0])
+                target = current['path'] / name
+                if messagebox.askyesno('Confirm', f'Delete file {name}?'):
+                    try:
+                        target.unlink(missing_ok=True)
+                        refresh_lists()
+                    except Exception as e:
+                        messagebox.showerror('Error', str(e))
+            elif dir_idx:
+                name = folders_lb.get(dir_idx[0])
+                target = current['path'] / name
+                if messagebox.askyesno('Confirm', f'Delete folder {name} and all contents?'):
+                    try:
+                        shutil.rmtree(target)
+                        refresh_lists()
+                    except Exception as e:
+                        messagebox.showerror('Error', str(e))
+            else:
+                messagebox.showinfo('Info', 'Select a file or folder to delete')
+
+        btns = ttk.Frame(win)
+        btns.pack(fill='x', padx=8, pady=6)
+        ttk.Button(btns, text='Root', command=go_root).grid(row=0, column=0, padx=4)
+        ttk.Button(btns, text='Back', command=go_back).grid(row=0, column=1, padx=4)
+        ttk.Button(btns, text='Open Folder', command=cd_into).grid(row=0, column=2, padx=4)
+        ttk.Button(btns, text='View File', command=view_file).grid(row=0, column=3, padx=4)
+        ttk.Button(btns, text='Create f/d', command=create_item).grid(row=0, column=4, padx=4)
+        ttk.Button(btns, text='Delete', command=delete_item).grid(row=0, column=5, padx=4)
+        refresh_lists()
+
+    # --------------------------- News Reader --------------------------- #
+    def open_news_reader(self):
+        win = tk.Toplevel(self)
+        win.title('News Reader')
+        win.geometry('640x420')
+        left = ttk.Frame(win)
+        left.pack(side='left', fill='y', padx=6, pady=6)
+        right = ttk.Frame(win)
+        right.pack(side='right', fill='both', expand=True, padx=6, pady=6)
+
+        lb = tk.Listbox(left, width=30)
+        lb.pack(fill='y', expand=True)
+
+        txt = ScrolledText(right)
+        txt.pack(fill='both', expand=True)
+
+        def refresh():
+            lb.delete(0, 'end')
+            for p in sorted(NEWS_DIR.glob('*.txt')):
+                lb.insert('end', p.name)
+
+        def open_selected(_=None):
+            sel = lb.curselection()
+            if not sel:
+                return
+            name = lb.get(sel[0])
+            content = read_text_file(NEWS_DIR / name)
+            txt.config(state='normal')
+            txt.delete('1.0', 'end')
+            txt.insert('1.0', content)
+            txt.config(state='disabled')
+
+        def new_news():
+            name = simpledialog.askstring('New News', 'Filename (with .txt):', parent=win)
+            if not name:
+                return
+            p = NEWS_DIR / name
+            if p.exists():
+                messagebox.showinfo('Info', 'File exists')
+                return
+            content = simpledialog.askstring('Content', 'Enter content:', parent=win)
+            p.write_text(content or '', encoding='utf-8')
+            refresh()
+
+        ttk.Button(left, text='Refresh', command=refresh).pack(fill='x')
+        ttk.Button(left, text='New', command=new_news).pack(fill='x', pady=4)
+        lb.bind('<Double-1>', open_selected)
+        refresh()
+
+    # --------------------------- Password Manager --------------------------- #
+    def open_password_manager(self):
+        win = tk.Toplevel(self)
+        win.title('Password Manager')
+        win.geometry('520x360')
+
+        def add_user():
+            username = simpledialog.askstring('Add', 'Username:', parent=win)
+            if not username:
+                return
+            password = simpledialog.askstring('Add', 'Password:', parent=win, show='*')
+            if password is None:
+                return
+            u = sanitize(username)
+            p = sanitize(password)
+            lines = PASS_FILE.read_text(encoding='utf-8').splitlines()
+            for line in lines:
+                if line.startswith(f"[{u}]="):
+                    messagebox.showerror('Error', f'User {u} exists')
+                    return
+            with PASS_FILE.open('a', encoding='utf-8') as f:
+                f.write(f"[{u}]=[{p}]\n")
+            messagebox.showinfo('OK', 'User added')
+
+        def view_all():
+            dev = simpledialog.askstring('DEV', 'Enter DEV password:', parent=win, show='*')
+            if dev != DEV_PASSWORD:
+                messagebox.showerror('Error', 'Incorrect DEV password')
+                return
+            if not PASS_FILE.exists():
+                if messagebox.askyesno('Missing', 'Password file missing. Create default?'):
+                    PASS_FILE.write_text('[admin]=[adminpassword123]\n', encoding='utf-8')
+                else:
+                    return
+            content = read_text_file(PASS_FILE)
+            v = tk.Toplevel(win)
+            v.title('Saved Passwords')
+            st = ScrolledText(v, width=60, height=20)
+            st.pack(fill='both', expand=True)
+            st.insert('1.0', content)
+            st.config(state='disabled')
+
+        def delete_user():
+            dev = simpledialog.askstring('DEV', 'Enter DEV password:', parent=win, show='*')
+            if dev != DEV_PASSWORD:
+                messagebox.showerror('Error', 'Incorrect DEV password')
+                return
+            username = simpledialog.askstring('Delete', 'Username to delete:', parent=win)
+            if not username:
+                return
+            u = sanitize(username)
+            if not PASS_FILE.exists():
+                messagebox.showinfo('Info', 'No password file')
+                return
+            lines = PASS_FILE.read_text(encoding='utf-8').splitlines()
+            kept = [ln for ln in lines if not ln.startswith(f"[{u}]=")]
+            if len(kept) == len(lines):
+                messagebox.showinfo('Info', f"User {u} not found")
+            else:
+                PASS_FILE.write_text('\n'.join(kept) + ('\n' if kept else ''), encoding='utf-8')
+                messagebox.showinfo('OK', f"User {u} deleted")
+
+        ttk.Button(win, text='Add New User', command=add_user).pack(fill='x', padx=10, pady=6)
+        ttk.Button(win, text='View All Passwords (DEV gate)', command=view_all).pack(fill='x', padx=10, pady=6)
+        ttk.Button(win, text='Delete User (DEV gate)', command=delete_user).pack(fill='x', padx=10, pady=6)
+
+    # --------------------------- CD/DVD --------------------------- #
+    def open_cd(self):
+        win = tk.Toplevel(self)
+        win.title('CD/DVD Reader')
+        win.geometry('600x420')
+        lb = tk.Listbox(win)
+        lb.pack(side='left', fill='y', padx=6, pady=6)
+        txt = ScrolledText(win)
+        txt.pack(side='right', fill='both', expand=True, padx=6, pady=6)
+
+        def refresh():
+            lb.delete(0, 'end')
+            for p in sorted(CD_DIR.glob('*.txt')):
+                lb.insert('end', p.name)
+
+        def open_sel(_=None):
+            sel = lb.curselection()
+            if not sel:
+                return
+            name = lb.get(sel[0])
+            txt.config(state='normal')
+            txt.delete('1.0', 'end')
+            txt.insert('1.0', read_text_file(CD_DIR / name))
+            txt.config(state='disabled')
+
+        ttk.Button(win, text='Refresh', command=refresh).pack(anchor='nw', padx=6, pady=4)
+        lb.bind('<Double-1>', open_sel)
+        refresh()
+
+    # --------------------------- Dev Tools --------------------------- #
+    def dev_tool_gate(self):
+        pw = simpledialog.askstring('DEV', 'Enter DEV password:', parent=self, show='*')
+        if pw != DEV_PASSWORD:
+            messagebox.showerror('Error', 'Incorrect password')
+            return
+        self.dev_tools()
+
+    def dev_tools(self):
+        win = tk.Toplevel(self)
+        win.title('Dev Tools')
+        win.geometry('520x420')
+        ttk.Button(win, text='Script Root File Reader', command=self.dev_file_reader).pack(fill='x', padx=10, pady=6)
+        ttk.Button(win, text='Reset System (gag)', command=self.dev_reset_gag).pack(fill='x', padx=10, pady=6)
+
+    def dev_file_reader(self):
+        win = tk.Toplevel(self)
+        win.title('File Reader (Script Root)')
+        win.geometry('640x420')
+        lb = tk.Listbox(win)
+        lb.pack(side='left', fill='y', padx=6, pady=6)
+        txt = ScrolledText(win)
+        txt.pack(side='right', fill='both', expand=True, padx=6, pady=6)
+
+        files = sorted([p.name for p in BASE.iterdir()])
+        for f in files:
+            lb.insert('end', f)
+
+        def open_sel(_=None):
+            sel = lb.curselection()
+            if not sel:
+                return
+            name = lb.get(sel[0])
+            p = BASE / name
+            txt.config(state='normal')
+            if p.is_file():
+                txt.delete('1.0', 'end')
+                txt.insert('1.0', read_text_file(p))
+            else:
+                txt.delete('1.0', 'end')
+                txt.insert('1.0', '(not a regular file)')
+            txt.config(state='disabled')
+
+        lb.bind('<Double-1>', open_sel)
+
+    def dev_reset_gag(self):
+        if not messagebox.askyesno('Confirm', 'Are you sure? This is a gag that simulates reset.'):
+            return
+        # Simulate "reset" by showing animations/messages
+        win = tk.Toplevel(self)
+        win.title('System Resetting')
+        lbl = ttk.Label(win, text='System will reset...', font=(None, 12))
+        lbl.pack(pady=10)
+        txt = ScrolledText(win, width=60, height=15)
+        txt.pack(fill='both', expand=True)
+
+        def spam():
+            for i in range(200):
+                txt.insert('end', f'Error: System file not found! {random.randint(0,65535)}\n')
+                txt.see('end')
+                win.update()
+                time.sleep(0.02)
+        self.after(100, spam)
+
+# --------------------------- Utilities --------------------------- #
+
+def sanitize(s: str) -> str:
+    return s.replace('&', '_amp_')
+
+# --------------------------- Run App --------------------------- #
+
+def main():
+    app = MetroGUI()
+    app.mainloop()
+
+
+if __name__ == '__main__':
+    main()

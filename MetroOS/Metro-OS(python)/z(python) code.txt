@@ -1,0 +1,652 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Metro OS – Python Console Edition
+---------------------------------
+A faithful, cross‑platform rewrite of your Batch-based mini “OS”.
+Tested on Linux/macOS/Windows with Python 3.9+.
+
+Features roughly mirror the original:
+- Boot menu → System
+- File Manager (rooted at ./G/systemfile/data)
+- Clock (auto-refresh)
+- News reader (./G/News/*.txt)
+- Calculator (safe eval of math)
+- System information (best effort without extra deps)
+- Password manager with DEV password gate (./G/pass/password.txt)
+- Settings (RAM/Disk mock screens)
+- Dev tools (file reader at script root, delete/reset gags)
+- CD/DVD ROM (./G/CD/*.txt)
+
+Tip: Run with `python3 metro_os.py` in a terminal that supports ANSI.
+"""
+from __future__ import annotations
+
+import os
+import sys
+import time
+import math
+import random
+import platform
+import getpass
+import socket
+from pathlib import Path
+from datetime import datetime
+from typing import Optional, Tuple
+
+# --------------------------- Paths & Globals --------------------------- #
+BASE = Path(__file__).resolve().parent
+G_DIR = BASE / "G"
+DATA_DIR = G_DIR / "systemfile" / "data"
+NEWS_DIR = G_DIR / "News"
+PASS_DIR = G_DIR / "pass"
+PASS_FILE = PASS_DIR / "password.txt"
+CD_DIR = G_DIR / "CD"
+
+DEV_PASSWORD = "10122009"
+
+for p in [DATA_DIR, NEWS_DIR, PASS_DIR, CD_DIR]:
+    p.mkdir(parents=True, exist_ok=True)
+
+# Seed default admin for password manager if missing
+if not PASS_FILE.exists():
+    PASS_FILE.write_text("[admin]=[adminpassword123]\n", encoding="utf-8")
+
+# --------------------------- Utilities --------------------------- #
+
+def clear():
+    os.system("cls" if os.name == "nt" else "clear")
+
+
+def pause(msg: str = "Press Enter to continue..."):
+    try:
+        input(msg)
+    except EOFError:
+        pass
+
+
+def header(title: str):
+    bar = "=" * 53
+    print(bar)
+    print(title.center(53))
+    print(bar)
+
+
+def list_dir(path: Path) -> Tuple[list[str], list[str]]:
+    folders, files = [], []
+    try:
+        for entry in sorted(path.iterdir(), key=lambda p: (p.is_file(), p.name.lower())):
+            if entry.is_dir():
+                folders.append(entry.name)
+            else:
+                files.append(entry.name)
+    except FileNotFoundError:
+        path.mkdir(parents=True, exist_ok=True)
+    return folders, files
+
+
+# --------------------------- Safe Calculator --------------------------- #
+import ast
+
+_ALLOWED_NODES = {
+    ast.Expression, ast.BinOp, ast.UnaryOp, ast.Num, ast.Load,
+    ast.Add, ast.Sub, ast.Mult, ast.Div, ast.FloorDiv, ast.Mod, ast.Pow,
+    ast.USub, ast.UAdd, ast.LParen if hasattr(ast, 'LParen') else ast.UnaryOp,
+    ast.Constant,
+}
+
+
+def safe_eval(expr: str) -> float:
+    """Safely evaluate a basic arithmetic expression."""
+    node = ast.parse(expr, mode="eval")
+
+    def _check(n: ast.AST):
+        if type(n) not in _ALLOWED_NODES:
+            raise ValueError("Unsupported expression")
+        for child in ast.iter_child_nodes(n):
+            _check(child)
+
+    _check(node)
+    return eval(compile(node, "<expr>", "eval"), {"__builtins__": {}}, {})
+
+
+# --------------------------- Screens --------------------------- #
+
+def boot_menu():
+    while True:
+        clear()
+        header("BOOT MENU")
+        print("CODE CAN RUN WITH NOTHING\n")
+        print("PLEASE READ THE README.txt FILE")
+        print("-" * 53)
+        print("1. sign in")
+        print("2. system setting")
+        print("3. exit")
+        choice = input("Enter your choice here: ").strip()
+        if choice == "1":
+            system_menu()
+        elif choice == "2":
+            setting_menu()
+        elif choice == "3":
+            exit_screen()
+            return
+        elif choice.lower() == "devmode":
+            dev_tool_gate()
+        elif choice.lower() == "cdrom":
+            cdrom_menu()
+        elif choice.lower() == "shop":
+            shop_top()
+        else:
+            continue
+
+
+def system_menu():
+    while True:
+        clear()
+        header("WELCOME TO METRO OS – DOS support")
+        print("1. File Manager")
+        print("2. Clock")
+        print("3. News")
+        print("4. Calculator")
+        print("5. system information")
+        print("6. password manager")
+        print("7. restart")
+        print("8. shutdown")
+        print("9. Back to Boot Menu")
+        choice = input("Enter your choice here: ").strip()
+        if choice == "1":
+            file_manager()
+        elif choice == "2":
+            clock_screen()
+        elif choice == "3":
+            news_reader()
+        elif choice == "4":
+            calculator()
+        elif choice == "5":
+            system_information()
+        elif choice == "6":
+            password_manager()
+        elif choice == "7":
+            restart_screen()
+        elif choice == "8":
+            exit_screen()
+            sys.exit(0)
+        elif choice == "9":
+            return
+
+
+# --------------------------- File Manager --------------------------- #
+
+def file_manager():
+    current = DATA_DIR
+    while True:
+        clear()
+        header("FILE MANAGER")
+        print(f"Current Directory: {current}")
+        print("-" * 53)
+        folders, files = list_dir(current)
+        print("[Folders:]")
+        if folders:
+            for d in folders:
+                print(d)
+        else:
+            print("(none)")
+        print("\n[Files:]")
+        if files:
+            for f in files:
+                print(f)
+        else:
+            print("(none)")
+        print("=" * 53)
+        print("Type commands:")
+        print("  cd <folder>      - open folder")
+        print("  back             - previous folder")
+        print("  root             - go to root")
+        print("  create f|d <name>- create file/folder")
+        print("  delete <name>    - delete file/folder")
+        print("  view <file>      - show file content")
+        print("  E                - exit to System")
+        cmd = input("Enter command: ").strip()
+        if not cmd:
+            continue
+        parts = cmd.split()
+        action = parts[0].lower()
+        try:
+            if action == "e":
+                return
+            elif action == "root":
+                current = DATA_DIR
+            elif action == "back":
+                if current != DATA_DIR:
+                    current = current.parent
+            elif action == "cd" and len(parts) >= 2:
+                target = (current / " ".join(parts[1:])).resolve()
+                if target.is_dir() and DATA_DIR in target.parents or target == DATA_DIR:
+                    if target.exists():
+                        current = target
+                    else:
+                        print("Folder not found!"); pause()
+                else:
+                    print("Blocked: out of root."); pause()
+            elif action == "create" and len(parts) >= 3:
+                kind, name = parts[1].lower(), " ".join(parts[2:])
+                target = current / name
+                if kind == "f":
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_text("", encoding="utf-8")
+                elif kind == "d":
+                    target.mkdir(parents=True, exist_ok=True)
+                else:
+                    print("Use: create f <name> OR create d <name>"); pause()
+            elif action == "delete" and len(parts) >= 2:
+                name = " ".join(parts[1:])
+                target = current / name
+                if target.is_dir():
+                    for root, dirs, files2 in os.walk(target, topdown=False):
+                        for f in files2:
+                            (Path(root) / f).unlink(missing_ok=True)
+                        for d in dirs:
+                            (Path(root) / d).rmdir()
+                    target.rmdir()
+                    print(f"Deleted folder '{name}'")
+                    pause()
+                elif target.is_file():
+                    target.unlink(missing_ok=True)
+                    print(f"Deleted file '{name}'")
+                    pause()
+                else:
+                    print("Not found!"); pause()
+            elif action == "view" and len(parts) >= 2:
+                name = " ".join(parts[1:])
+                target = current / name
+                if target.is_file():
+                    clear(); header("FILE CONTENT")
+                    try:
+                        print(target.read_text(encoding="utf-8", errors="replace"))
+                    except Exception as e:
+                        print(f"ERROR: {e}")
+                    print("\n" + "=" * 53)
+                    pause()
+                else:
+                    print("File not found!"); pause()
+            else:
+                print("Unknown command"); pause()
+        except Exception as e:
+            print(f"Error: {e}"); pause()
+
+
+# --------------------------- News --------------------------- #
+
+def news_reader():
+    while True:
+        clear(); header("NEWS READER")
+        files = sorted([p.name for p in NEWS_DIR.glob("*.txt")])
+        if files:
+            print("Available News Files:")
+            for i, name in enumerate(files, 1):
+                print(f"{i}. {name}")
+        else:
+            print("No news available.")
+        print("\nType number to open, 'r' to refresh, or 'E' to exit.")
+        ans = input("Choice: ").strip().lower()
+        if ans in ("e", "exit", "q"):
+            return
+        if ans == "r":
+            continue
+        if ans.isdigit():
+            idx = int(ans) - 1
+            if 0 <= idx < len(files):
+                clear(); header("NEWS")
+                p = NEWS_DIR / files[idx]
+                print(p.read_text(encoding="utf-8", errors="replace"))
+                print("\n" + "=" * 53)
+                pause()
+
+
+# --------------------------- Calculator --------------------------- #
+
+def calculator():
+    while True:
+        clear(); header("CALCULATOR")
+        print("Enter expression (e.g., 3+3, 5*8, 10/2)")
+        print("Type 'b' to go back.")
+        expr = input("Enter calculation: ").strip()
+        if expr.lower() in ("b", "back", "exit", "e"):
+            return
+        try:
+            result = safe_eval(expr)
+            if isinstance(result, (int, float)) and (math.isfinite(result)):
+                print(f"{expr} = {result}")
+            else:
+                print("Invalid or non-finite result")
+        except ZeroDivisionError:
+            scary_error()
+        except Exception as e:
+            print(f"Invalid input: {e}")
+        pause()
+
+
+def scary_error():
+    clear()
+    header("!!! ERROR !!!")
+    print("SYSTEM INSTABILITY DETECTED! CODE: 0xDEAD0000")
+    print("FATAL EXCEPTION IN PROCESSOR CORE\n")
+    print("Press Enter to recover...")
+    try:
+        while True:
+            print(f"ERROR DETECTED! SYSTEM FAILURE! WARNING!!! {random.randint(0, 65535)}")
+            time.sleep(0.02)
+            if sys.stdin in select_readable(timeout=0):
+                _ = input()
+                break
+    except KeyboardInterrupt:
+        pass
+
+
+def select_readable(timeout: float = 0.0):
+    """Non-blocking check if stdin has data (best effort)."""
+    try:
+        import select
+        r, _, _ = select.select([sys.stdin], [], [], timeout)
+        return r
+    except Exception:
+        return []
+
+
+# --------------------------- Clock --------------------------- #
+
+def clock_screen():
+    while True:
+        clear(); header("CLOCK – tic tac tic tac")
+        now = datetime.now().strftime("%H:%M:%S")
+        print("\n" + now.center(53) + "\n")
+        print("1. exit")
+        print("2. refresh the clock (auto refresh every second)")
+        print("Or press Enter to refresh once")
+        choice = input("Enter your choice: ").strip()
+        if choice == "1":
+            return
+        elif choice == "2":
+            try:
+                while True:
+                    clear(); header("CLOCK – tic tac tic tac")
+                    print("\n" + datetime.now().strftime("%H:%M:%S").center(53) + "\n")
+                    print("Press Ctrl+C to stop auto-refresh")
+                    time.sleep(1)
+            except KeyboardInterrupt:
+                pass
+        # else: loop refresh once
+
+
+# --------------------------- Password Manager --------------------------- #
+
+def password_manager():
+    while True:
+        clear(); header("PASSWORD MANAGER")
+        print("1. Add New User Password")
+        print("2. View All User Passwords")
+        print("3. Delete user")
+        print("4. Back to System Menu")
+        choice = input("Enter your choice: ").strip()
+        if choice == "1":
+            add_password()
+        elif choice == "2":
+            view_passwords()
+        elif choice == "3":
+            delete_user()
+        elif choice == "4":
+            return
+
+
+def sanitize(s: str) -> str:
+    return s.replace("&", "_amp_")
+
+
+def add_password():
+    clear(); header("ADD NEW USER PASSWORD")
+    username = input("Enter new username: ").strip()
+    password = input("Enter new password: ").strip()
+    username, password = sanitize(username), sanitize(password)
+    lines = PASS_FILE.read_text(encoding="utf-8").splitlines()
+    for line in lines:
+        if line.startswith(f"[{username}]="):
+            print(f"Error: User {username} already exists!")
+            pause(); return
+    with PASS_FILE.open("a", encoding="utf-8") as f:
+        f.write(f"[{username}]=[{password}]\n")
+    print(f"New user {username} added successfully!")
+    pause()
+
+
+def view_passwords():
+    clear(); header("VIEW SAVED PASSWORDS")
+    dev = getpass.getpass("Enter DEV password to view passwords: ")
+    if dev != DEV_PASSWORD:
+        print("Incorrect DEV password!"); pause(); return
+    if not PASS_FILE.exists():
+        ans = input("Password file missing. Create default? (y/n): ").strip().lower()
+        if ans == "y":
+            PASS_FILE.write_text("[admin]=[adminpassword123]\n", encoding="utf-8")
+            print("Created default password file.")
+        else:
+            print("Canceled.")
+    else:
+        print(PASS_FILE.read_text(encoding="utf-8", errors="replace"))
+    pause()
+
+
+def delete_user():
+    clear(); header("DELETE USER FROM PASSWORD FILE")
+    dev = getpass.getpass("Enter DEV password to delete user: ")
+    if dev != DEV_PASSWORD:
+        print("Incorrect DEV password!"); pause(); return
+    username = sanitize(input("Enter the username to delete: ").strip())
+    if not PASS_FILE.exists():
+        print("No password file."); pause(); return
+    lines = PASS_FILE.read_text(encoding="utf-8").splitlines()
+    kept = [ln for ln in lines if not ln.startswith(f"[{username}]=")]
+    if len(kept) == len(lines):
+        print(f"User '{username}' not found!")
+    else:
+        PASS_FILE.write_text("\n".join(kept) + ("\n" if kept else ""), encoding="utf-8")
+        print(f"User '{username}' deleted successfully!")
+    pause()
+
+
+# --------------------------- System Information --------------------------- #
+
+def system_information():
+    clear(); header("SYSTEM INFORMATION")
+    print(f"Computer Name: {socket.gethostname()}")
+    print(f"Username: {getpass.getuser()}")
+    print(f"Operating System: {platform.system()} {platform.release()}")
+    cpu = platform.processor() or platform.machine()
+    print(f"Processor: {cpu}")
+    # RAM & Disk: try best without external deps
+    try:
+        import shutil
+        total, used, free = shutil.disk_usage(str(BASE))
+        print(f"Available Disk Space: {free // (1024**3)} GB")
+    except Exception:
+        print("Available Disk Space: (unknown)")
+    print("RAM Size: (unknown without psutil)")
+    print("=" * 53)
+    pause()
+
+
+# --------------------------- Settings --------------------------- #
+
+def setting_menu():
+    while True:
+        clear(); header("SYSTEM SETTINGS")
+        print("1. RAM setting")
+        print("2. Disk setting")
+        print("3. exit")
+        ans = input("Enter your choice here: ").strip()
+        if ans == "1":
+            ram_setting()
+        elif ans == "2":
+            disk_setting()
+        elif ans == "3":
+            return
+
+
+def ram_setting():
+    clear(); header("RAM SETTING")
+    print("you can change 8,388,608 bit a time")
+    print("\nMemory 512MB")
+    print("Boot by DOS")
+    print("Error not found")
+    pause()
+
+
+def disk_setting():
+    clear(); header("DISK SETTING")
+    print("you can change 12,092,211 bit a time\n")
+    print("disk size: 10GB")
+    print("free space: 9.4GB")
+    print("I'm Disk, I wanna tell you, don't change anything")
+    print("because that's your memories\nbye")
+    pause()
+
+
+# --------------------------- Dev Tools --------------------------- #
+
+def dev_tool_gate():
+    clear(); header("DEV SAFE SCREEN")
+    dev = getpass.getpass("Enter DEV password: ")
+    if dev == DEV_PASSWORD:
+        print("Access granted!"); time.sleep(0.6)
+        dev_mode()
+    else:
+        print("Incorrect password!"); pause()
+
+
+def dev_mode():
+    while True:
+        clear(); header("WELCOME TO DEV TOOL")
+        print("1. system file reader (script root)")
+        print("2. Delete the system (gag)")
+        print("3. reset the system")
+        print("4. exit")
+        ans = input("enter your choice: ").strip()
+        if ans == "1":
+            dev_file_reader()
+        elif ans == "2":
+            dev_delete_gag()
+        elif ans == "3":
+            restart_screen()
+        elif ans == "4":
+            return
+
+
+def dev_file_reader():
+    while True:
+        clear(); header("FILE READER (DEV – script root)")
+        files = sorted([p.name for p in BASE.iterdir()])
+        for i, name in enumerate(files, 1):
+            print(f"{i}. {name}")
+        print("\nType number to open, 'b' to go back.")
+        ans = input("Choice: ").strip().lower()
+        if ans in ("b", "back", "e", "exit"):
+            return
+        if ans.isdigit():
+            idx = int(ans) - 1
+            if 0 <= idx < len(files):
+                p = BASE / files[idx]
+                clear(); header("FILE CONTENT")
+                if p.is_file():
+                    try:
+                        print(p.read_text(encoding="utf-8", errors="replace"))
+                    except Exception as e:
+                        print(f"ERROR: {e}")
+                else:
+                    print("(not a regular file)")
+                print("\n" + "=" * 53)
+                pause()
+
+
+def dev_delete_gag():
+    clear(); header("ARE YOU SURE")
+    ans = input("enter your choice (Y/N): ").strip().upper()
+    if ans != "Y":
+        print("thank you for choosing"); pause(); return
+    clear(); print("goodbye"); time.sleep(1)
+    while True:
+        print("Error: System file not found!")
+        time.sleep(0.5)
+        print("No")
+        time.sleep(0.5)
+        # loop forever until Ctrl+C
+
+
+# --------------------------- CD/DVD ROM --------------------------- #
+
+def cdrom_menu():
+    while True:
+        clear(); header("WELCOME TO CD/DVD ROM")
+        print("1. open CD ROM")
+        print("2. delete CD ROM (placeholder)")
+        print("3. exit")
+        ans = input("Enter your choice: ").strip()
+        if ans == "1":
+            open_cd()
+        elif ans == "2":
+            clear(); header("DELETE CD ROM")
+            print("This option can delete files or perform other actions.")
+            pause()
+        elif ans == "3":
+            return
+
+
+def open_cd():
+    while True:
+        clear(); header("CD READER")
+        files = sorted([p.name for p in CD_DIR.glob("*.txt")])
+        if files:
+            print("Available CD files:")
+            for i, name in enumerate(files, 1):
+                print(f"{i}. {name}")
+        else:
+            print("No CD Available")
+        print("\nType number to open, 'b' to go back.")
+        ans = input("Choice: ").strip().lower()
+        if ans in ("b", "back", "e", "exit"):
+            return
+        if ans.isdigit():
+            idx = int(ans) - 1
+            if 0 <= idx < len(files):
+                clear(); header("CD CONTENT")
+                p = CD_DIR / files[idx]
+                print(p.read_text(encoding="utf-8", errors="replace"))
+                print("\n" + "=" * 53)
+                pause()
+
+
+# --------------------------- Misc Screens --------------------------- #
+
+def restart_screen():
+    clear(); header("SYSTEM RESTARTING")
+    print("The system will restart in 5 seconds...")
+    time.sleep(5)
+    # Simply return to boot menu
+
+
+def exit_screen():
+    clear(); header("EXIT THE SYSTEM")
+    print("see you soon\nsupport by Python")
+    pause()
+
+
+def shop_top():
+    clear(); header("SHOP (placeholder)")
+    print("Coming soon…")
+    pause()
+
+
+# --------------------------- Main --------------------------- #
+if __name__ == "__main__":
+    try:
+        boot_menu()
+    except KeyboardInterrupt:
+        print("\nBye!")
