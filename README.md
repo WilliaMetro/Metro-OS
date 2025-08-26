@@ -1,106 +1,95 @@
-#MetroOS
-
-##by Metro Studio :)
+Metro-OS
+by Metro Studio :)
 
 MetroOS is a small experimental project that simulates a simple operating system.
 It supports CMD, DOS, and Python, letting you explore files, folders, and basic commands.
 
-###Project Structure
-
+Project Structure
 /Metro-OS-gui (Python) – GUI experiment (currently broken, use with caution)
- /beta/G
-           /News/3-2000.txt|4-2002.txt|5-2006.txt|6-1996.txt|7-2004.txt|7-2008.txt|9-2007.txt|20-11-1997.txt|
-           /noftification/nof.vbs|
-           /pass/password.txt|
- Metro.bat
- Z.txt
- /G
-  /CD/CD 0.txt|CD 1.txt|CD 2.txt|
-  /News/3-2000.txt|4-2002.txt|5-2006.txt|6-1996.txt|7-2004.txt|7-2008.txt|9-2007.txt|9-2007.txt|20-11-1997(copy 1).txt|
-  /noftification/nof.vbs|
-  /pass/password.txt|
-  /systemfile/data/a|Data.txt|
- debug.log
- metro-os.py
- README.txt
- z(python) code.txt
- z(python-gui) code.txt
- z(wwindow) code.txt
-
-
-
+/beta/G
+   /News/3-2000.txt | 4-2002.txt | 5-2006.txt | 6-1996.txt | 7-2004.txt | 7-2008.txt | 9-2007.txt | 20-11-1997.txt |
+   /noftification/nof.vbs
+   /pass/password.txt
+Metro.bat
+Z.txt
+/G
+   /CD/CD 0.txt | CD 1.txt | CD 2.txt
+   /News/3-2000.txt | 4-2002.txt | 5-2006.txt | 6-1996.txt | 7-2004.txt | 7-2008.txt | 9-2007.txt | 9-2007.txt | 20-11-1997(copy 1).txt
+   /noftification/nof.vbs
+   /pass/password.txt
+   /systemfile/data/a | Data.txt
+debug.log
+metro-os.py
+README.txt
+z(python) code.txt
+z(python-gui) code.txt
+z(wwindow) code.txt
 
 /Metro-OS-legacy (Python) – Old version of MetroOS
- /beta/G
-           /News/3-2000.txt|4-2002.txt|5-2006.txt|6-1996.txt|7-2004.txt|7-2008.txt|9-2007.txt|20-11-1997.txt|
-           /noftification/nof.vbs|
-           /pass/password.txt|
- Metro.bat
- Z.txt
- /G
-  /CD/CD 0.txt|CD 1.txt|CD 2.txt|
-  /News/3-2000.txt|4-2002.txt|5-2006.txt|6-1996.txt|7-2004.txt|7-2008.txt|9-2007.txt|9-2007.txt|20-11-1997(copy 1).txt|
-  /noftification/nof.vbs|
-  /pass/password.txt|
-  /systemfile/data/a|Data.txt|
- /Metro_Configs
- /Metro_Files
- /Metro_Log
- debug.log
- metro-os.py
- README.txt
- z(python) code.txt
- z(python-legacy) code.txt
- z(wwindow) code.txt
-
-
-
+/beta/G
+   /News/3-2000.txt | 4-2002.txt | 5-2006.txt | 6-1996.txt | 7-2004.txt | 7-2008.txt | 9-2007.txt | 20-11-1997.txt
+   /noftification/nof.vbs
+   /pass/password.txt
+Metro.bat
+Z.txt
+/G
+   /CD/CD 0.txt | CD 1.txt | CD 2.txt
+   /News/3-2000.txt | 4-2002.txt | 5-2006.txt | 6-1996.txt | 7-2004.txt | 7-2008.txt | 9-2007.txt | 9-2007.txt | 20-11-1997(copy 1).txt
+   /noftification/nof.vbs
+   /pass/password.txt
+   /systemfile/data/a | Data.txt
+/Metro_Configs
+/Metro_Files
+/Metro_Log
+debug.log
+metro-os.py
+README.txt
+z(python) code.txt
+z(python-legacy) code.txt
+z(wwindow) code.txt
 
 /Metro-OS (Python) – Main version (recommended)
 /beta/G
-           /News/3-2000.txt|4-2002.txt|5-2006.txt|6-1996.txt|7-2004.txt|7-2008.txt|9-2007.txt|20-11-1997.txt|
-           /noftification/nof.vbs|
-           /pass/password.txt|
-  Metro.bat
-  Z.txt
- /G
-  /CD/CD 0.txt|CD 1.txt|CD 2.txt|
-  /News/3-2000.txt|4-2002.txt|5-2006.txt|6-1996.txt|7-2004.txt|7-2008.txt|9-2007.txt|9-2007.txt|20-11-1997(copy 1).txt|
-  /noftification/nof.vbs|
-  /pass/password.txt|
-  /systemfile/data/a|Data.txt|
- debug.log
- metro-os.py
- README.txt
- z(python) code.txt
+   /News/3-2000.txt | 4-2002.txt | 5-2006.txt | 6-1996.txt | 7-2004.txt | 7-2008.txt | 9-2007.txt | 20-11-1997.txt
+   /noftification/nof.vbs
+   /pass/password.txt
+Metro.bat
+Z.txt
+/G
+   /CD/CD 0.txt | CD 1.txt | CD 2.txt
+   /News/3-2000.txt | 4-2002.txt | 5-2006.txt | 6-1996.txt | 7-2004.txt | 7-2008.txt | 9-2007.txt | 9-2007.txt | 20-11-1997(copy 1).txt
+   /noftification/nof.vbs
+   /pass/password.txt
+   /systemfile/data/a | Data.txt
+debug.log
+metro-os.py
+README.txt
+z(python) code.txt
 z(wwindow) code.txt
-
-
 
 /osnew (BAT) – Original Windows batch version
 /beta/G
-           /News/3-2000.txt|4-2002.txt|5-2006.txt|6-1996.txt|7-2004.txt|7-2008.txt|9-2007.txt|20-11-1997.txt|
-           /noftification/nof.vbs|
-           /pass/password.txt|
-  Metro.bat
-  Z.txt
- /G
-  /CD/CD 0.txt|CD 1.txt|CD 2.txt|
-  /News/3-2000.txt|4-2002.txt|5-2006.txt|6-1996.txt|7-2004.txt|7-2008.txt|9-2007.txt|9-2007.txt|20-11-1997(copy 1).txt|
-  /noftification/nof.vbs|
-  /pass/password.txt|
-  /systemfile/data/a|Data.txt|
+   /News/3-2000.txt | 4-2002.txt | 5-2006.txt | 6-1996.txt | 7-2004.txt | 7-2008.txt | 9-2007.txt | 20-11-1997.txt
+   /noftification/nof.vbs
+   /pass/password.txt
+Metro.bat
+Z.txt
+/G
+   /CD/CD 0.txt | CD 1.txt | CD 2.txt
+   /News/3-2000.txt | 4-2002.txt | 5-2006.txt | 6-1996.txt | 7-2004.txt | 7-2008.txt | 9-2007.txt | 9-2007.txt | 20-11-1997(copy 1).txt
+   /noftification/nof.vbs
+   /pass/password.txt
+   /systemfile/data/a | Data.txt
 debug.log
 Metro OS.bat
 os test.Ink
 README.txt
 z.txt
 
-##How to Run
+How to Run
 Windows
 
 Download and install Python
-.
 
 To run:
 
@@ -143,13 +132,13 @@ brew install python3
 chmod +x metro-os.py
 ./metro-os.py
 
-##Notes
+Notes
 
-##Most Linux distributions already include Python 3. You can check with:
+Most Linux distributions already include Python 3. You can check with:
 
 python3 --version
 
 
-#The GUI version (Metro-OS-gui) is unstable and may not work correctly.
+The GUI version (Metro-OS-gui) is unstable and may not work correctly.
 
-#For best results, use the main Python version (/Metro-OS) or the Batch version (/osnew).
+For best results, use the main Python version (/Metro-OS) or the Batch version (/osnew).
