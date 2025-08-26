@@ -1,5 +1,5 @@
-# Metro-OS
-# by Metro Studio :)
+# [Metro-OS](https://github.com/WilliaMetro/Metro-OS/tree/main)
+# [by Metro Studio :)](https://www.youtube.com/@WilliaMetrohttps://www.youtube.com/@WilliaMetro)
 
 MetroOS is a small experimental project that simulates a simple operating system.
 It supports CMD, DOS, and Python, letting you explore files, folders, and basic commands.
@@ -87,9 +87,9 @@ README.txt
 z.txt
 
 # How to Run
-# Windows
+# Windows 
 
-Download and install Python
+Download and install [python](https://www.python.org/downloads/) 
 
 To run:
 
@@ -97,7 +97,7 @@ Double-click metro-os.py (Python version), or
 
 Double-click metro-os.bat (Batch version).
 
-# Linux (Ubuntu, Debian, Mint, etc.)
+# [Linux (Ubuntu, Debian, Mint, etc.)]
 (my system I have using)
 # Ubuntu, Debian, Mint, etc.
 sudo apt update && sudo apt install -y python3 python3-pip
@@ -105,7 +105,7 @@ chmod +x metro-os.py
 ./metro-os.py
 
 Fedora / CentOS / RHEL
-# Fedora / CentOS / RHEL 8+
+# [Fedora / CentOS / RHEL 8+]
 sudo dnf install -y python3 python3-pip
 
 # CentOS / RHEL 7
@@ -115,25 +115,25 @@ chmod +x metro-os.py
 ./metro-os.py
 
 Arch Linux / Manjaro
-# Arch Linux / Manjaro
+# [Arch Linux / Manjaro]
 sudo pacman -S python python-pip
 chmod +x metro-os.py
 ./metro-os.py
 
 openSUSE
-#Leap
+# [OpenSUSE/Leap/Tumbleweed]
 sudo zypper install -y python3 python3-pip
 chmod +x metro-os.py
 ./metro-os.py
 
 Alpine Linux
-# Alpine Linux
+# [Alpine Linux]
 apk add --update python3 py3-pip
 chmod +x metro-os.py
 ./metro-os.py
 
 macOS (with Homebrew)
-# macOS (with Homebrew)
+# [macOS (with Homebrew)]
 brew install python3
 chmod +x metro-os.py
 ./metro-os.py
