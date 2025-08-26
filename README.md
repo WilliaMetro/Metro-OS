@@ -162,3 +162,6 @@ The GUI version (Metro-OS-gui) is unstable and may not work correctly.
 
 # recomment
 For best results, use the main Python version (/Metro-OS) or the Batch version (/osnew).
+
+# Facebook post
+https://www.facebook.com/share/p/1F3q41YMEK/
