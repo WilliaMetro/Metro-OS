@@ -6,8 +6,14 @@ It supports CMD, DOS, and Python, letting you explore files, folders, and basic 
 
 # screenshot
 Metro-OS-gui (Python) sorry I don't have screenshot because it's currently broken
+
+# Metro-OS (Python) – Main version (recommended)
 ![Metro-OS (Python) – Main version (recommended)](./photo/python(origin).png)
+
+# Metro-OS-legacy (Python) – Old version of Metro-OS
 ![Metro-OS-legacy (Python) – Old version of Metro-OS](./photo/python(Legacy).png)
+
+# osnew (BAT) – Original Windows batch version
 ![osnew (BAT) – Original Windows batch version](./photo/Batch(Windows).png)
 
 # Project Structure
