@@ -1,5 +1,5 @@
-Metro-OS
-by Metro Studio :)
+# Metro-OS
+## by Metro Studio :)
 
 MetroOS is a small experimental project that simulates a simple operating system.
 It supports CMD, DOS, and Python, letting you explore files, folders, and basic commands.
