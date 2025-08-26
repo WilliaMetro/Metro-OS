@@ -1,11 +1,11 @@
 # Metro-OS
-## by Metro Studio :)
+# by Metro Studio :)
 
 MetroOS is a small experimental project that simulates a simple operating system.
 It supports CMD, DOS, and Python, letting you explore files, folders, and basic commands.
 
-Project Structure
-/Metro-OS-gui (Python) – GUI experiment (currently broken, use with caution)
+# Project Structure
+# /Metro-OS-gui (Python) – GUI experiment (currently broken, use with caution)
 /beta/G
    /News/3-2000.txt | 4-2002.txt | 5-2006.txt | 6-1996.txt | 7-2004.txt | 7-2008.txt | 9-2007.txt | 20-11-1997.txt |
    /noftification/nof.vbs
@@ -25,7 +25,7 @@ z(python) code.txt
 z(python-gui) code.txt
 z(wwindow) code.txt
 
-/Metro-OS-legacy (Python) – Old version of MetroOS
+# /Metro-OS-legacy (Python) – Old version of MetroOS
 /beta/G
    /News/3-2000.txt | 4-2002.txt | 5-2006.txt | 6-1996.txt | 7-2004.txt | 7-2008.txt | 9-2007.txt | 20-11-1997.txt
    /noftification/nof.vbs
@@ -48,7 +48,7 @@ z(python) code.txt
 z(python-legacy) code.txt
 z(wwindow) code.txt
 
-/Metro-OS (Python) – Main version (recommended)
+# /Metro-OS (Python) – Main version (recommended)
 /beta/G
    /News/3-2000.txt | 4-2002.txt | 5-2006.txt | 6-1996.txt | 7-2004.txt | 7-2008.txt | 9-2007.txt | 20-11-1997.txt
    /noftification/nof.vbs
@@ -67,7 +67,7 @@ README.txt
 z(python) code.txt
 z(wwindow) code.txt
 
-/osnew (BAT) – Original Windows batch version
+# /osnew (BAT) – Original Windows batch version
 /beta/G
    /News/3-2000.txt | 4-2002.txt | 5-2006.txt | 6-1996.txt | 7-2004.txt | 7-2008.txt | 9-2007.txt | 20-11-1997.txt
    /noftification/nof.vbs
@@ -86,8 +86,8 @@ os test.Ink
 README.txt
 z.txt
 
-How to Run
-Windows
+# How to Run
+# Windows
 
 Download and install Python
 
@@ -97,7 +97,8 @@ Double-click metro-os.py (Python version), or
 
 Double-click metro-os.bat (Batch version).
 
-Linux (Ubuntu, Debian, Mint, etc.)
+# Linux (Ubuntu, Debian, Mint, etc.)
+(my system I have using)
 # Ubuntu, Debian, Mint, etc.
 sudo apt update && sudo apt install -y python3 python3-pip
 chmod +x metro-os.py
@@ -137,13 +138,13 @@ brew install python3
 chmod +x metro-os.py
 ./metro-os.py
 
-Notes
+# Notes
 
 Most Linux distributions already include Python 3. You can check with:
 
 python3 --version
 
-
+# warning
 The GUI version (Metro-OS-gui) is unstable and may not work correctly.
 
 For best results, use the main Python version (/Metro-OS) or the Batch version (/osnew).
