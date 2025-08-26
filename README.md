@@ -114,6 +114,7 @@ Double-click metro-os.py (Python version), or Double-click metro-os.bat (Batch v
 (my system I have using)
 # Ubuntu, Debian, Mint, etc.
 sudo apt update && sudo apt install -y python3 python3-pip
+
 chmod +x metro-os.py
 ./metro-os.py
 
