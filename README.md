@@ -147,4 +147,5 @@ python3 --version
 # warning
 The GUI version (Metro-OS-gui) is unstable and may not work correctly.
 
+# recomment
 For best results, use the main Python version (/Metro-OS) or the Batch version (/osnew).
