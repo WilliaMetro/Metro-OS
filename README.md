@@ -1,6 +1,6 @@
 # [Metro-OS](https://github.com/WilliaMetro/Metro-OS/tree/main)
 # [by Metro Studio :)](https://www.youtube.com/@WilliaMetro)
-![metro studio](https://photos.fife.usercontent.google.com/pw/AP1GczO8bC7wQ2AFH0tYI9U6trc7mpeFK7nP4fxmDW4NFpkxm9-2eOVMaRws=w1280-h720-s-no-gm?authuser=0)
+![metro studio](https://i.pinimg.com/1200x/1e/c5/96/1ec59641f20a6699d7b60a9805637707.jpg)
 
 MetroOS is a small experimental project that simulates a simple operating system.
 It supports CMD, DOS, and Python, letting you explore files, folders, and basic commands.
