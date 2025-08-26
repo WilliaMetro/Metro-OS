@@ -1,72 +1,155 @@
-Metro-OS
+#MetroOS
 
-Made by Metro Studio 🙂
+##by Metro Studio :)
 
-Metro-OS is a fun project that works like a small operating system.
-It lets you try simple commands with CMD, DOS, and Python.
-You can open files, explore folders, and play around like a real OS.
+MetroOS is a small experimental project that simulates a simple operating system.
+It supports CMD, DOS, and Python, letting you explore files, folders, and basic commands.
 
-📂 Project Folders
+###Project Structure
 
-/Metro-OS-gui (Python) → GUI version (⚠️ currently broken, may crash)
+/Metro-OS-gui (Python) – GUI experiment (currently broken, use with caution)
+ /beta/G
+           /News/3-2000.txt|4-2002.txt|5-2006.txt|6-1996.txt|7-2004.txt|7-2008.txt|9-2007.txt|20-11-1997.txt|
+           /noftification/nof.vbs|
+           /pass/password.txt|
+ Metro.bat
+ Z.txt
+ /G
+  /CD/CD 0.txt|CD 1.txt|CD 2.txt|
+  /News/3-2000.txt|4-2002.txt|5-2006.txt|6-1996.txt|7-2004.txt|7-2008.txt|9-2007.txt|9-2007.txt|20-11-1997(copy 1).txt|
+  /noftification/nof.vbs|
+  /pass/password.txt|
+  /systemfile/data/a|Data.txt|
+ debug.log
+ metro-os.py
+ README.txt
+ z(python) code.txt
+ z(python-gui) code.txt
+ z(wwindow) code.txt
 
-/Metro-OS-legacy (Python) → Old version, still works
 
-/Metro-OS (Python) → Main version
 
-/osnew (Batch) → Original Windows batch version
 
-⚠️ Warning
+/Metro-OS-legacy (Python) – Old version of MetroOS
+ /beta/G
+           /News/3-2000.txt|4-2002.txt|5-2006.txt|6-1996.txt|7-2004.txt|7-2008.txt|9-2007.txt|20-11-1997.txt|
+           /noftification/nof.vbs|
+           /pass/password.txt|
+ Metro.bat
+ Z.txt
+ /G
+  /CD/CD 0.txt|CD 1.txt|CD 2.txt|
+  /News/3-2000.txt|4-2002.txt|5-2006.txt|6-1996.txt|7-2004.txt|7-2008.txt|9-2007.txt|9-2007.txt|20-11-1997(copy 1).txt|
+  /noftification/nof.vbs|
+  /pass/password.txt|
+  /systemfile/data/a|Data.txt|
+ /Metro_Configs
+ /Metro_Files
+ /Metro_Log
+ debug.log
+ metro-os.py
+ README.txt
+ z(python) code.txt
+ z(python-legacy) code.txt
+ z(wwindow) code.txt
 
-The GUI version (Metro-OS-gui) is not working right now.
-It might crash or act strange if you run it.
-You can fix or change it, but please be careful.
-👉 Use at your own risk!
 
-🚀 How to Run
-On Windows
 
-Install Python
+
+/Metro-OS (Python) – Main version (recommended)
+/beta/G
+           /News/3-2000.txt|4-2002.txt|5-2006.txt|6-1996.txt|7-2004.txt|7-2008.txt|9-2007.txt|20-11-1997.txt|
+           /noftification/nof.vbs|
+           /pass/password.txt|
+  Metro.bat
+  Z.txt
+ /G
+  /CD/CD 0.txt|CD 1.txt|CD 2.txt|
+  /News/3-2000.txt|4-2002.txt|5-2006.txt|6-1996.txt|7-2004.txt|7-2008.txt|9-2007.txt|9-2007.txt|20-11-1997(copy 1).txt|
+  /noftification/nof.vbs|
+  /pass/password.txt|
+  /systemfile/data/a|Data.txt|
+ debug.log
+ metro-os.py
+ README.txt
+ z(python) code.txt
+z(wwindow) code.txt
+
+
+
+/osnew (BAT) – Original Windows batch version
+/beta/G
+           /News/3-2000.txt|4-2002.txt|5-2006.txt|6-1996.txt|7-2004.txt|7-2008.txt|9-2007.txt|20-11-1997.txt|
+           /noftification/nof.vbs|
+           /pass/password.txt|
+  Metro.bat
+  Z.txt
+ /G
+  /CD/CD 0.txt|CD 1.txt|CD 2.txt|
+  /News/3-2000.txt|4-2002.txt|5-2006.txt|6-1996.txt|7-2004.txt|7-2008.txt|9-2007.txt|9-2007.txt|20-11-1997(copy 1).txt|
+  /noftification/nof.vbs|
+  /pass/password.txt|
+  /systemfile/data/a|Data.txt|
+debug.log
+Metro OS.bat
+os test.Ink
+README.txt
+z.txt
+
+##How to Run
+Windows
+
+Download and install Python
 .
 
-Double-click metro-os.py (Python version) or metro-os.bat (Batch version).
+To run:
 
-On Linux
+Double-click metro-os.py (Python version), or
 
-Make sure Python 3 is installed:
+Double-click metro-os.bat (Batch version).
 
+Linux (Ubuntu, Debian, Mint, etc.)
 sudo apt update && sudo apt install -y python3 python3-pip
+chmod +x metro-os.py
+./metro-os.py
 
+Fedora / CentOS / RHEL
+# Fedora / CentOS / RHEL 8+
+sudo dnf install -y python3 python3-pip
 
-Run the program:
+# CentOS / RHEL 7
+sudo yum install -y python3 python3-pip
 
 chmod +x metro-os.py
 ./metro-os.py
 
-On macOS
+Arch Linux / Manjaro
+sudo pacman -S python python-pip
+chmod +x metro-os.py
+./metro-os.py
 
-Install Python with Homebrew:
+openSUSE
+sudo zypper install -y python3 python3-pip
+chmod +x metro-os.py
+./metro-os.py
 
+Alpine Linux
+apk add --update python3 py3-pip
+chmod +x metro-os.py
+./metro-os.py
+
+macOS (with Homebrew)
 brew install python3
-
-
-Run the program:
-
 chmod +x metro-os.py
 ./metro-os.py
 
+##Notes
 
-📌 Check Python version:
+##Most Linux distributions already include Python 3. You can check with:
 
 python3 --version
 
-🤝 Contributing
 
-You can fork this project and make your own version.
+#The GUI version (Metro-OS-gui) is unstable and may not work correctly.
 
-Pull Requests are welcome, but changes will be reviewed first.
-
-Please be extra careful if you edit Metro-OS-gui because it may cause errors.
-
-✅ This project is just for fun and learning.
-It’s not a real operating system, but you can learn coding and commands by trying it out!
+#For best results, use the main Python version (/Metro-OS) or the Batch version (/osnew).
