@@ -98,6 +98,7 @@ Double-click metro-os.py (Python version), or
 Double-click metro-os.bat (Batch version).
 
 Linux (Ubuntu, Debian, Mint, etc.)
+# Ubuntu, Debian, Mint, etc.
 sudo apt update && sudo apt install -y python3 python3-pip
 chmod +x metro-os.py
 ./metro-os.py
@@ -113,21 +114,25 @@ chmod +x metro-os.py
 ./metro-os.py
 
 Arch Linux / Manjaro
+# Arch Linux / Manjaro
 sudo pacman -S python python-pip
 chmod +x metro-os.py
 ./metro-os.py
 
 openSUSE
+#Leap
 sudo zypper install -y python3 python3-pip
 chmod +x metro-os.py
 ./metro-os.py
 
 Alpine Linux
+# Alpine Linux
 apk add --update python3 py3-pip
 chmod +x metro-os.py
 ./metro-os.py
 
 macOS (with Homebrew)
+# macOS (with Homebrew)
 brew install python3
 chmod +x metro-os.py
 ./metro-os.py
