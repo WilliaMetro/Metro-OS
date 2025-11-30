@@ -1,15 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Metro OS – Python Console Edition (Arrow-key Menus)
----------------------------------------------------
-Chạy trên Linux/macOS/Windows (Windows cần: pip install windows-curses)
-Python 3.9+
-
-Tính năng:
-- Menu điều hướng bằng phím mũi tên + Enter (curses)
-- Vẫn gõ được chữ trong màn hình menu (hiển thị "Typed: ...")
-- Các màn hình con (File Manager, Clock, News, Calculator...) giữ nguyên kiểu nhập cũ
 """
 from __future__ import annotations
 
