@@ -6,7 +6,7 @@ MetroOS is a small experimental project that simulates a simple operating system
 It supports CMD, DOS, and Python, letting you explore files, folders, and basic commands.
 # update
 new linux binary files in 
-[click this](./Metro-OS/MetroOS/linux%20live%20run%20for/)
+[click this](./MetroOS/linux%20live%20run%20for/)
 # screenshot
 # Metro-OS-gui (Python)  
 sorry I don't have screenshot because it's currently broken
