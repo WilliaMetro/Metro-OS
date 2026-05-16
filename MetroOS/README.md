@@ -2,21 +2,39 @@
 
 **by Metro Studio :)**
 
-MetroOS is a small experimental project simulating an operating system.  
-It supports **CMD, DOS, and Python**, allowing you to explore files, folders, and simple commands.  
+MetroOS is a small experimental project simulating an operating system.
+It supports **CMD, DOS, and Python**, allowing you to explore files, folders, and simple commands.
 
 ---
 
-## How to Run  
+# How to Run 
+## Library need to install
+os
+sys
+time
+math
+random
+platform
+socket
+getpass
+ctypes
+pathlib
+datetime
+typing
+tkinter
+ttk
+messagebox
+filedialog
+simpledialog
 
 ### Windows  
-- Install [Python](https://www.python.org/downloads/).  
-- Simply double-click **`metro-os.py`** to run.  
--- Simply double-click **`metro-os.bat`** to run.  
+- Install [Python](https://www.python.org/downloads/).
+- Simply double-click **`metro-os.py`** to run.
+-- Simply double-click **`metro-os.bat`** to run.
 
 ### Linux  
-- Make sure Python is installed.  
-- Open the terminal and run:  
+- Make sure Python is installed.
+- Open the terminal and run:
   ```bash
   chmod +x metro-os.py
   ./metro-os.py
@@ -24,7 +42,7 @@ It supports **CMD, DOS, and Python**, allowing you to explore files, folders, an
 ## Installation (Linux)
 
 ### Ubuntu / Debian-based Linux  
-Open a terminal and run:  
+Open a terminal and run:
 ```bash
 # Update package list
 sudo apt update  
