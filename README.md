@@ -102,7 +102,25 @@ os test.Ink
 README.txt
 z.txt
 
-# How to Run
+# How to Run 
+## Library need to install
+os
+sys
+time
+math
+random
+platform
+socket
+getpass
+ctypes
+pathlib
+datetime
+typing
+tkinter
+ttk
+messagebox
+filedialog
+simpledialog
 # Windows 
 
 Download and install [python](https://www.python.org/downloads/) 
